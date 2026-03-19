@@ -71,6 +71,7 @@ class CircuitBreakerScene extends Phaser.Scene {
         this.startWave();
       }
     });
+
     this.input.on("pointerdown", (pointer) => {
       if (!state.inBuildPhase) return;
       const gx = Phaser.Math.Clamp(Math.floor(pointer.worldX / GRID), 0, MAP_SIZE - 1);
