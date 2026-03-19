@@ -72,6 +72,17 @@ class CircuitBreakerScene extends Phaser.Scene {
       }
     });
 
+    this.input.on("pointerdown", (pointer) => {
+      if (!state.inBuildPhase) return;
+      const gx = Phaser.Math.Clamp(Math.floor(pointer.worldX / GRID), 0, MAP_SIZE - 1);
+      const gy = Phaser.Math.Clamp(Math.floor(pointer.worldY / GRID), 0, MAP_SIZE - 1);
+      this.placeOrSalvage(gx, gy);
+    });
+
+    this.cursorMarker = this.add.rectangle(this.toWorld(0), this.toWorld(0), GRID - 6, GRID - 6);
+    this.cursorMarker.setStrokeStyle(2, 0x99ccff, 0.9);
+    this.cursorMarker.setFillStyle(0x99ccff, 0.08);
+
     this.time.addEvent({ delay: 350, callback: this.towerFire, callbackScope: this, loop: true });
     this.time.addEvent({ delay: 1000, callback: this.waveCheck, callbackScope: this, loop: true });
 
@@ -95,6 +106,12 @@ class CircuitBreakerScene extends Phaser.Scene {
       (this.cursors.down.isDown || this.wasd.S.isDown ? 1 : 0);
 
     this.player.setVelocity(vx * speed, vy * speed);
+
+    const pointer = this.input.activePointer;
+    const hoverX = Phaser.Math.Clamp(Math.floor(pointer.worldX / GRID), 0, MAP_SIZE - 1);
+    const hoverY = Phaser.Math.Clamp(Math.floor(pointer.worldY / GRID), 0, MAP_SIZE - 1);
+    this.cursorMarker.setPosition(this.toWorld(hoverX), this.toWorld(hoverY));
+    this.cursorMarker.setVisible(state.inBuildPhase);
 
     if (Phaser.Input.Keyboard.JustDown(this.wasd.E)) {
       const { gx, gy } = this.playerCell();
